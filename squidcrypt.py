@@ -76,7 +76,7 @@ def main():
 	if not key:
 		key = random_key_gen(32)
 
-#Encrypt the .bin file
+#Encrypt raw shellcode
 
 	f = open(file, "rb")
 	buf = f.read()
