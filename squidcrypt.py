@@ -9,7 +9,7 @@ def parse_args():
 
 	parser = argparse.ArgumentParser()	
 	
-	parser.add_argument("-p", "--payload", default="", type=str, help="Enter path to payload.bin")
+	parser.add_argument("-s", "--shellcode", default="", type=str, help="Enter path to raw shellcode")
 	parser.add_argument("-k", "--key", default="", type=str, help="Enter the encryption key if you do not want to use the self-generated key")
 	parser.add_argument("-f", "--format", default="b64", type=str, help="Enter the format for the output")
 	return parser.parse_args()
@@ -68,7 +68,7 @@ def print_banner():
 def main():
 	print_banner()
 	args = parse_args()
-	file = args.payload
+	file = args.shellcode
 	format = args.format
 	key = args.key
 	if not key:
