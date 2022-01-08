@@ -74,26 +74,28 @@ def main():
 	if not key:
 		key = random_key_gen(32)
 
-#Encrypt the raw shellcode
+#Open file and read raw shellcode
 
 	f = open(file, "rb")
 	buf = f.read()
 	f.close()
-	
+#Print key	
 	print("[+] key and payload will be written to key.b64 and payload.b64")
 	print("[+] Encrypting payload with key: " + key)
+	
+#Encrypt raw shellcode with key and encode as b64 string
 	hkey = hash_key(key)
 	encrypted = encrypt(hkey, hkey[:16], buf)
 	b64 = base64.b64encode(encrypted)
-	
+#Write key to file	
 	f = open("./key.b64", "w")
 	f.write(key)
 	f.close()
-	
+#Write payload to file	
 	f = open("./payload.b64", "w")
 	f.write(b64.decode('utf-8'))
 	f.close()
-	
+#Print payload
 	if format == "b64":
 		print("[+] Base64 output:")
 		print(b64.decode('utf-8'))
