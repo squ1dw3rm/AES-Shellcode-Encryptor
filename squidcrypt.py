@@ -49,9 +49,26 @@ def random_key_gen(length):
 	result_str = ''.join(random.choice(letters) for i in range(length))
 	return result_str
 	
+def print_banner():
+	banner = """
+	
+  ██████   █████   █    ██ ▓█████▄  ▄████▄   ██▀███ ▓██   ██▓ ██▓███  ▄▄▄█████▓
+▒██    ▒ ▒██▓  ██▒ ██  ▓██▒▒██▀ ██▌▒██▀ ▀█  ▓██ ▒ ██▒▒██  ██▒▓██░  ██▒▓  ██▒ ▓▒
+░ ▓██▄   ▒██▒  ██░▓██  ▒██░░██   █▌▒▓█    ▄ ▓██ ░▄█ ▒ ▒██ ██░▓██░ ██▓▒▒ ▓██░ ▒░
+  ▒   ██▒░██  █▀ ░▓▓█  ░██░░▓█▄   ▌▒▓▓▄ ▄██▒▒██▀▀█▄   ░ ▐██▓░▒██▄█▓▒ ▒░ ▓██▓ ░ 
+▒██████▒▒░▒███▒█▄ ▒▒█████▓ ░▒████▓ ▒ ▓███▀ ░░██▓ ▒██▒ ░ ██▒▓░▒██▒ ░  ░  ▒██▒ ░ 
+▒ ▒▓▒ ▒ ░░░ ▒▒░ ▒ ░▒▓▒ ▒ ▒  ▒▒▓  ▒ ░ ░▒ ▒  ░░ ▒▓ ░▒▓░  ██▒▒▒ ▒▓▒░ ░  ░  ▒ ░░   
+░ ░▒  ░ ░ ░ ▒░  ░ ░░▒░ ░ ░  ░ ▒  ▒   ░  ▒     ░▒ ░ ▒░▓██ ░▒░ ░▒ ░         ░    
+░  ░  ░     ░   ░  ░░░ ░ ░  ░ ░  ░ ░          ░░   ░ ▒ ▒ ░░  ░░         ░      
+      ░      ░       ░        ░    ░ ░         ░     ░ ░                       
+                            ░      ░                 ░ ░                       
+"""
+	print(banner)
+	
 #Main Shellcode Encryptor
 
 def main():
+	print_banner()
 	args = parse_args()
 	file = args.payload
 	format = args.format
@@ -59,14 +76,14 @@ def main():
 	if not key:
 		key = random_key_gen(32)
 
-#Encrypt raw shellcode
+#Encrypt the .bin file
 
 	f = open(file, "rb")
 	buf = f.read()
 	f.close()
 	
 	print("[+] key and payload will be written to key.b64 and payload.b64")
-	print("[+] Encrypting the payload, key=" + key)
+	print("[+] Encrypting the payload with key=" + key)
 	hkey = hash_key(key)
 	encrypted = encrypt(hkey, hkey[:16], buf)
 	b64 = base64.b64encode(encrypted)
