@@ -2,7 +2,7 @@
 import array, base64, random, string
 from Crypto.Cipher import AES
 from hashlib import sha256
-import argparse, subprocess, os
+import argparse
 
 
 #Defined Functions
