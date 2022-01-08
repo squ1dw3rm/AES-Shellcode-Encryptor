@@ -3,7 +3,7 @@ import array, base64, random, string, argparse
 from Crypto.Cipher import AES
 from hashlib import sha256
 
-#Defined Functions
+#Functions
 
 def parse_args():
 
@@ -63,7 +63,7 @@ def print_banner():
 """
 	print(banner)
 	
-#Main Shellcode Encryptor
+#Encryptor
 
 def main():
 	print_banner()
