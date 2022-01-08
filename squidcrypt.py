@@ -11,7 +11,7 @@ def parse_args():
 
 	parser = argparse.ArgumentParser()	
 	
-	parser.add_argument("-p", "--payload", default="", type=str, help="Enter path to payload.bin")
+	parser.add_argument("-p", "--payload", default="", type=str, help="Enter path to raw shellcode")
 	parser.add_argument("-k", "--key", default="", type=str, help="Enter the encryption key if you do not want to use the self-generated key")
 	parser.add_argument("-f", "--format", default="b64", type=str, help="Enter the format for the output")
 	return parser.parse_args()
