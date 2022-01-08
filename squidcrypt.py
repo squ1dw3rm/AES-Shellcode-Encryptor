@@ -100,14 +100,5 @@ def main():
 		print("\n[+] Go forth and hack!")
 		return
 		
-	if format == "c":
-		print("[+] C output:")
-		hex_string = 'unsigned char payload[] ={0x';
-		hex = '0x'.join('{:02x},'.format(x) for x in encrypted)
-		hex_string = hex_string + hex[:-1] + "};"
-		print(hex_string)
-		print("\n[+] Go forth and hack!")
-		return
-		
 if __name__ == '__main__':
 	main()
