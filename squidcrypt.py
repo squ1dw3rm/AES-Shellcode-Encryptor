@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-import array, base64, random, string
+import array, base64, random, string, argparse
 from Crypto.Cipher import AES
 from hashlib import sha256
-import argparse
-
 
 #Defined Functions
 
