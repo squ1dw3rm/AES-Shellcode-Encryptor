@@ -11,7 +11,7 @@ def parse_args():
 
 	parser = argparse.ArgumentParser()	
 	
-	parser.add_argument("-p", "--payload", default="", type=str, help="Enter path to raw shellcode")
+	parser.add_argument("-p", "--payload", default="", type=str, help="Enter path to payload.bin")
 	parser.add_argument("-k", "--key", default="", type=str, help="Enter the encryption key if you do not want to use the self-generated key")
 	parser.add_argument("-f", "--format", default="b64", type=str, help="Enter the format for the output")
 	return parser.parse_args()
@@ -76,14 +76,14 @@ def main():
 	if not key:
 		key = random_key_gen(32)
 
-#Encrypt raw shellcode
+#Encrypt the .bin file
 
 	f = open(file, "rb")
 	buf = f.read()
 	f.close()
 	
 	print("[+] key and payload will be written to key.b64 and payload.b64")
-	print("[+] Encrypting the payload with key=" + key)
+	print("[+] Encrypting payload with key: " + key)
 	hkey = hash_key(key)
 	encrypted = encrypt(hkey, hkey[:16], buf)
 	b64 = base64.b64encode(encrypted)
@@ -113,40 +113,3 @@ def main():
 		
 if __name__ == '__main__':
 	main()
-
-"""
-						---------------Decryption Function in C#---------------
-
- private static byte[] Decrypt(string key, string aes_base64)
-        {
-            byte[] tempKey = Encoding.ASCII.GetBytes(key);
-            tempKey = SHA256.Create().ComputeHash(tempKey);
-
-            byte[] data = Convert.FromBase64String(aes_base64);
-
-            Aes aes = new AesManaged();
-            aes.Mode = CipherMode.CBC;
-            aes.Padding = PaddingMode.PKCS7;
-            ICryptoTransform dec = aes.CreateDecryptor(tempKey, SubArray(tempKey, 16));
-
-            using (MemoryStream msDecrypt = new MemoryStream())
-            {
-                using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, dec, CryptoStreamMode.Write))
-                {
-
-                    csDecrypt.Write(data, 0, data.Length);
-
-                    return msDecrypt.ToArray();
-                }
-            }
-        }
-        static byte[] SubArray(byte[] a, int length)
-        {
-            byte[] b = new byte[length];
-            for (int i = 0; i < length; i++)
-            {
-                b[i] = a[i];
-            }
-            return b;
-        }
-"""
